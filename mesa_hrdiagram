@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 24 15:16:41 2019
+
+Plotting using the mesa_reader tool 
+
+@author: janne
+"""
+from pylab import *
+
+import mesa_reader as mr
+import matplotlib.pyplot as plt
+plt.close("all")
+
+
+h = mr.MesaData('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/history.data')
+
+plot(h.log_Teff, h.log_L)
+
+# set axis labels
+xlabel('log Effective Temperature')
+ylabel('log Luminosity')
+
+
+# load the profile associated with model number 100
+#p_100 = l.profile_data(100)
+# the same as the following
+#p_100 = l.profile_data(model_number=100)
+
+# load the profile with PROFILE number 12
+#p_12 = l.profile_data(profile_number=12)
+
+# load the last profile saved (largest model number)
+#p_last = l.profile_data()

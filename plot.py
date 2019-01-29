@@ -30,7 +30,7 @@ ylab = r'$\log(L)$'
 # ylab = r'$\log(g)$'
 
 # Read data from MESA
-data, header = mt.readmesa('/home/janne/Gunter_project/gunther_project/LOGS/history.data')
+data, header = mt.readmesa('/home/janne/Gunter_project/44_tau/LOGS/history.data')
 teff = data['log_Teff']
 radius = data['log_L']
 # logg = data['log_g']
@@ -42,7 +42,16 @@ with PdfPages('44tau.pdf') as pdf:
     # First plot
     #
     plt.figure()
-
+    
+    #x1 = 3.78
+    #x2 = 3.89
+    #y1 = 0.5
+    #y2 = 1.5
+    
+    #x1,x2,y1,y2 = plt.axis()
+   # plt.axis((x1,x2,y1,y2))
+    #ax.set_xlim([3.85,3.9])
+    #ax.set_ylim([0,1.5])
     # Add plot with a label (with math symbols) and make it transparent
     plt.plot(teff, radius, label=r'2.01 M$_{\odot}$, modified', alpha=0.7)
 
@@ -70,7 +79,7 @@ with PdfPages('44tau.pdf') as pdf:
     #
 
     # Open another figure
-    plt.figure()
+    #plt.figure()
 
     # HERE GOES THE PLOTTING!
 

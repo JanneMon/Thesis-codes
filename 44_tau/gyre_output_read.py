@@ -22,7 +22,7 @@ def readmesa(fname):
     # Assuming Python 3 read mode (for comparability with NumPy)
     with open(fname, 'rb') as f:
         lines = f.readlines()
-        header = np.genfromtxt(lines[1:4], names=True)
+        #header = np.genfromtxt(lines[1:3])
         data = np.genfromtxt(lines[5:], names=True)
 
-    return data, header
+    return data

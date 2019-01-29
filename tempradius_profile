@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 24 17:46:47 2019
+
+@author: janne
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 24 15:40:20 2019
+
+@author: janne
+"""
+
+from pylab import *
+import os, os.path
+import mesa_reader as mr
+import matplotlib.pyplot as plt
+plt.close("all")
+
+
+# load entire LOG directory information
+l = mr.MesaLogDir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/')
+
+
+list_number = [s for s in os.listdir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/') if s.endswith('.data')]
+
+for t in range(1,len(list_number)-1):
+    p = l.profile_data(profile_number=t)
+    loglog(p.Rho, p.P, label='profile number %s' %t)
+    xlabel("density")
+    ylabel("pressure")
+    
+
+legend()
+
+
+
+
+# this works even if you only have logRho and logT!
