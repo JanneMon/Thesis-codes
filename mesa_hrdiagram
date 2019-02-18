@@ -14,15 +14,19 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 
-h = mr.MesaData('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/history.data')
+h = mr.MesaData('/home/janne/Gunter_project/44_tau/example_track/history.data')
 
-plot(h.log_Teff, h.log_L)
+
+index = h.star_age > 1e8
+noms_Teff = h.log_Teff[index]
+noms_L = h.log_L[index]
+plot(noms_Teff, noms_L)
 
 # set axis labels
 xlabel('log Effective Temperature')
 ylabel('log Luminosity')
 
-
+plt.gca().invert_xaxis()
 # load the profile associated with model number 100
 #p_100 = l.profile_data(100)
 # the same as the following

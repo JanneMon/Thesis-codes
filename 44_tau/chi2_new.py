@@ -13,7 +13,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 from pylab import *
 import os, sys
-
+plt.close("all")
 
 #list_number = [s for s in os.listdir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/') if s.endswith('.dat')]
 #for filename in os.listdir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'):
@@ -22,7 +22,8 @@ import os, sys
 
 list_number = [os.path.join('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/', file) for file in os.listdir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/') if file.endswith('.dat')]
 finalarray = []
-
+names = []
+bm_array2 = []
 for file in range(len(list_number)):
     if file == 4 or file == 6:
         continue 
@@ -46,7 +47,7 @@ for file in range(len(list_number)):
 
     re_freq_obs = [6.8980, 8.9607, 11.20, 13.48]
     re_freq_obs_unc     = [2.762223525*10**(-7), 8.454940424*10**(-7),  1*10**(-7), 1*10**(-7)]
-
+    #re_freq_obs_unc = np.ones(len(re_freq_obs)) * 0.1
     remaining_obs = re_freq_obs 
     #remaining_obs_unc = freq_obs_uncertainties
     remaining_theo = re_freq_theo
@@ -54,7 +55,7 @@ for file in range(len(list_number)):
     remaining_radial = radial_order
     
     best_matching = []
-    
+    #names = []
 
     for ii in range(min(len(re_freq_theo), len(re_freq_obs))): #default: freq_obs, but depends if freq_obs is longer than re_freq
         best = np.inf
@@ -72,8 +73,7 @@ for file in range(len(list_number)):
                     bestkk = kk
         
         # print(best, bestjj, bestkk)
-        best_matching += [[remaining_ells[bestjj], remaining_radial[bestjj], 
-                           remaining_theo[bestjj], remaining_obs[bestkk]]]
+        best_matching += [[remaining_ells[bestjj], remaining_radial[bestjj], remaining_theo[bestjj], remaining_obs[bestkk]]]
         
         remaining_theo = np.delete(remaining_theo, bestjj)
         remaining_ells = np.delete(remaining_ells, bestjj)
@@ -86,30 +86,33 @@ for file in range(len(list_number)):
     
     bm_array = np.asarray(best_matching)
     
+    bm_array2 += [bm_array]
+    finalarray += [[bm_array, file]]
     
-    finalarray += [bm_array]
-    
-farr = []   
-for i in range(len(finalarray)):    
-    if len(finalarray[i]) < 4:
-        farr = np.delete(finalarray,finalarray[i])
-    #else: 
-    #    farr += finalarray[i]
-        
-finalarray2 = np.concatenate(farr, axis=0)
-    #diff = np.abs(bm_array[:,2]-bm_array[:,3])
+    #names += [bm_array, file]
 
-x2 = []
-step = 4
-#for j in range(len(finalarray)):
-for i in range(0,len(finalarray2),4):
-    #step == 4
-    #if i % step == 0:
-    x2 += [[sum(np.abs(finalarray2[i,2]-finalarray2[i,3])**2/4)]]
-    #else:
-     #  i + 4
+#farr2 = []
+farr = [] 
+finalarray2 = []
+#np.concatenate(names[:],axis=0)
+
+for i in range(len(bm_array2)):    
+    if len(bm_array2[i]) < 4:
+        farr += finalarray.pop(i)
+  
+    #finalarray2 += farr
+#farr2 += [farr]
+    
+#finalarray2 = np.concatenate(finalarray, axis=0)
+
+#names += [finalarray2, file]
+
+#x2 = []
+
+#for i in range(0,len(finalarray),4):
+#    x2 += [[sum(np.abs(finalarray[i,2]-finalarray[i,3])**2/4)]]
        
-x2 += [x2]
+#x2 += [x2]
 
 
 #sample = "This is a string"
@@ -121,3 +124,31 @@ x2 += [x2]
 #        print("do something else with x "+x)
 #k = number of observed osc. modes
 #chi2 = 1/k*sum(vi_obs-vi_theo)2
+ 
+#print(finalarray)
+chi2 = np.empty(len(finalarray))
+modelnos = np.empty(len(finalarray))
+for i, (array, modelno) in enumerate(finalarray):
+    array = np.asarray(array)
+    if len(array) == 4:
+        #print('i', i)
+        #print('modelno', modelno)
+        #print('array', array)
+        #print(array[:, 2])
+        delta = array[:, 2] - array[:, 3]
+        #print('delta', delta)
+        #print('uncertainties', re_freq_obs_unc)
+        chi2[i] = np.sum((delta ** 2) / (np.asarray(re_freq_obs_unc) ** 2))
+        chi2[i] /= len(delta)
+        print('chi2', chi2[i])
+        modelnos[i] = modelno
+    #for i in range(len(array)):
+    #    print('single model', array[i])
+    
+print('every chi2', chi2)
+plt.figure()
+plt.plot(modelnos, log(chi2), '*', linestyle='None')
+plt.xlabel('profile/model')
+plt.ylabel('log(chi2)')
+
+    
