@@ -20,7 +20,7 @@ plt.close("all")
 #    if filename.endswith(".dat"):
 #        data = gar.readmesa(filename)
 
-list_number = [os.path.join('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/', file) for file in os.listdir('/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/') if file.endswith('.dat')]
+list_number = [os.path.join('/home/janne/Gunter_project/44_tau/example_zs/LOGS*', file) for file in os.listdir('/home/janne/Gunter_project/44_tau/example_zs/LOGS*') if file.endswith('.dat')]
 finalarray = []
 names = []
 bm_array2 = []
