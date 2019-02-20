@@ -27,15 +27,19 @@ def chis(fname):
             if not file.endswith('freqs.dat'): #and os.path.exists(file)==True:
                 continue 
             
-            print(file)
+            #print(file)
             names = []
             #      continue 
             dires = os.path.join(root,file)
             #data = gar.readmesa(list_number[file])
             data = gar.readmesa(dires)
+            #print(dires, data)
             #print(dires)
             harm_degree = data['l']
             radial_order= data['n_pg']
+            
+            #print(type(harm_degree))
+            
             #acou_num = data['n_p']
             #grav_num = data['n_g']
             #re_omega = data['Re(omega)']
@@ -48,25 +52,25 @@ def chis(fname):
     
             re_freq_obs = [6.8980, 8.9607, 11.20, 13.48]
             re_freq_obs_unc     = [2.762223525*10**(-7), 8.454940424*10**(-7),  1*10**(-7), 1*10**(-7)]
-            print(len(re_freq_theo))
+            #print(len(np.atleast_1d(re_freq_theo)))
             #re_freq_obs_unc = np.ones(len(re_freq_obs)) * 0.1
             remaining_obs = re_freq_obs 
             #remaining_obs_unc = freq_obs_uncertainties
-            remaining_theo = re_freq_theo
-            remaining_ells = harm_degree
-            remaining_radial = radial_order
+            remaining_theo = np.atleast_1d(re_freq_theo)
+            remaining_ells = np.atleast_1d(harm_degree)
+            remaining_radial = np.atleast_1d(radial_order)
     
             best_matching = []
             #names = []
     
-            for ii in range(min(len(re_freq_theo), len(re_freq_obs))): #default: freq_obs, but depends if freq_obs is longer than re_freq
+            for ii in range(min(len(np.atleast_1d(re_freq_theo)), len(re_freq_obs))): #default: freq_obs, but depends if freq_obs is longer than re_freq
                 best = np.inf
                 bestjj = -1
                 bestkk = -1
         
                 #print(len(remaining_obs))
         
-                for jj in range(len(remaining_theo)):
+                for jj in range(len(np.atleast_1d(remaining_theo))):
                     for kk in range(len(remaining_obs)):
                         val = (remaining_theo[jj] - remaining_obs[kk])**2 / 4 #put uncertainty here  
                         if (val < best):
@@ -90,29 +94,35 @@ def chis(fname):
                     
             bm_array2 += [bm_array]
             finalarray += [[bm_array, file]]
-            #print(finalarray)
-     
-
+            #print(file)
+    #print(finalarray)
+    #print(bm_array2)
+    #print(len(bm_array2[26])) = 1
     farr = [] 
-
-    for i in range(len(bm_array2)):    
-        if len(bm_array2[i]) < 4:
-            farr += finalarray.pop(i)
     
+    
+    temp = []
+    
+    for i in range(len(bm_array2)):    
+        if len(bm_array2[i]) >= 2:
+            
+            #farr += finalarray.pop(i)
+            temp.append(finalarray[i])
+        else:
+            print(finalarray[i][1])
+    
+    finalarray = temp
     
     chi2 = np.zeros(len(finalarray))
     modelnos = np.zeros(len(finalarray))
-    print(len(finalarray))
+    #print(len(finalarray))
     #number = []
     for i, (array, modelno) in enumerate(finalarray):
         array = np.asarray(array)
         if len(array) == 4:
-            #print(finalarray)
-            
             
             m = re.search('profile(.+?)-freqs.dat', modelno)
-            #modelnos = m.findall(modelno)
-            #print(modelnos)
+          
             if m:
                 modelnos[i] = m.group(1)
                 #print(modelnos)
