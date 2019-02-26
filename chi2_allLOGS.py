@@ -98,7 +98,7 @@ def chis(fname):
     #print(finalarray)
     #print(bm_array2)
     #print(len(bm_array2[26])) = 1
-    farr = [] 
+    #farr = [] 
     
     
     temp = []
@@ -108,8 +108,8 @@ def chis(fname):
             
             #farr += finalarray.pop(i)
             temp.append(finalarray[i])
-        else:
-            print(finalarray[i][1])
+        #else:
+            #print(finalarray[i][1])
     
     finalarray = temp
     
@@ -132,18 +132,17 @@ def chis(fname):
             
             chi2[i] /= len(delta)
         
-        #number += [modelnos] 
-        #new = np.asarray(number)
-    print(modelnos)
-    print(chi2)
+    #print(modelnos)
+    #print(chi2)
     
-    plt.figure()
-    plt.plot(modelnos, np.log(chi2), '*', linestyle='None')
-    plt.xlabel('profile/model')
-    plt.ylabel('log(chi2)')
-    
-    return chi2
-
-a = '/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'
-b = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.020-0.29-1.5'
-results = chis(b)
+    #plt.figure()
+    #plt.plot(modelnos, np.log(chi2), '*', linestyle='None')
+    #plt.xlabel('profile/model')
+    #plt.ylabel('log(chi2)')
+    results = [[modelnos, chi2]]
+    #print(results)
+    return results
+#c = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.022-0.29-1.5'
+#a = '/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'
+#b = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.020-0.29-1.5'
+#results = chis(c)
