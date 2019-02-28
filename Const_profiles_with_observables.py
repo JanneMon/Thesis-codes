@@ -9,7 +9,9 @@ Thius code is meant to put constraints on the standard mesa input files to recog
 lies within a three sigma uncertainty of the observed parameters. 
 """
 
-
+import mesa_reader as mr
+import os, re
+import numpy as np
 #Observed parameters are from Lenz et al.: Study of the delta Scuti Star 44 tau
 Log_Teff_obs = 3.839
 Log_L_obs = 1.340
@@ -20,16 +22,30 @@ Log_Teff_obs_unc = 0.007
 Log_L_obs_unc = 0.0065 
 Log_g_obs_unc = 0.1
 
+n = 7
 #Three sigma intervals
-Log_Teff_3s = 3*Log_Teff_obs_unc
-Log_L_3s = 3*Log_L_obs_unc
-Log_g_3s = 3*Log_g_obs_unc
+Log_Teff_ns = n*Log_Teff_obs_unc
+Log_L_ns = n*Log_L_obs_unc
+Log_g_ns = n*Log_g_obs_unc
 
+Log_Teff_lower = Log_Teff_obs - Log_Teff_ns
+Log_Teff_upper = Log_Teff_obs + Log_Teff_ns
+Log_L_lower = Log_L_obs - Log_L_ns
+Log_L_upper = Log_L_obs + Log_L_ns
+Log_g_lower = Log_g_obs - Log_g_ns
+Log_g_upper = Log_g_obs + Log_g_ns
 
 dire = mr.MesaLogDir('/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1')
 
 histnos = []
-modelno = []
+modelnos = []
+profnos = []
+filtered = []
+#filtered1 = []
+#filtered2 = []
+#filtered3 = []
+profarray = []
+
 for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1')):
     for file in files:
         if file.startswith('profile') and file.endswith('.data'): #and os.path.exists(file)==True:
@@ -38,33 +54,50 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
             m = re.search('profile(.+?).data', file)
           
             if m:
-                modelnos = m.group(1)
+                modelno = m.group(1)
                     #print(modelnos)
                 
-            modelno += [modelnos]
+            modelnos += [modelno]
 
         if file.startswith('history'):
             dirs = os.path.join(root,file)
+            #print(dirs)
             #print(natsort.natsorted(dirs,reverse=True))
             
             h = mr.MesaData(dirs)
             Log_Teff_theo = h.log_Teff
             Log_L_theo = h.log_L
-            log_g_theo = h.log_g
+            Log_g_theo = h.log_g
+            
+            #mask = Log_Teff_lower < Log_Teff_theo and Log_Teff_upper > Log_Teff_theo
             
             histno = h.model_number
-        
-            histnos += [histno]    
+            histnos += [histno]
+            histnos = np.array(histnos)
             
-                
             
-for i in range(0,len(modelno)):             #   for i in range(1,len(modelno)):
-    
-    p = dire.profile_data(profile_number=modelno[i])                
+            for i in range(0,len(Log_Teff_theo)):               
+                mask1 = Log_Teff_lower < Log_Teff_theo[i] and Log_Teff_upper > Log_Teff_theo[i] and Log_L_lower < Log_L_theo[i] and Log_L_upper > Log_L_theo[i] and Log_g_lower < Log_g_theo[i] and Log_g_upper > Log_g_theo[i]
+                filtered += [mask1]
+            
+            filtered = np.array(filtered)
+            
+            array = histnos[0]
+            array_filtered = array[filtered] 
+            
+       #     for j in filtered:
+       #         if j == True:
+
+for i in modelnos: 
+    i = int(i)
+
+    p = dire.profile_data(profile_number=i)                
     profno = p.model_number
-    
-    # And now for actually sorting the profiles: 
-    print(i)
-    if histnos[0][i] == profno:
-        print('something please')
+            #print('Trues:')
+    for number in array_filtered:
+        #for l in range(1,len(array_filtered)):
+        if profno == number:
+            print(i)
+
+
      
