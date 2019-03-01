@@ -6,7 +6,8 @@ Created on Tue Feb 26 16:18:04 2019
 @author: janne
 
 Thius code is meant to put constraints on the standard mesa input files to recognize which profiles 
-lies within a three sigma uncertainty of the observed parameters. 
+lies within a three sigma uncertainty of the observed parameters. This codes assumes that 
+hist interval and profile number is not the same. 
 """
 
 import mesa_reader as mr
@@ -22,7 +23,7 @@ Log_Teff_obs_unc = 0.007
 Log_L_obs_unc = 0.0065 
 Log_g_obs_unc = 0.1
 
-n = 7
+n = 10
 #Three sigma intervals
 Log_Teff_ns = n*Log_Teff_obs_unc
 Log_L_ns = n*Log_L_obs_unc
@@ -46,7 +47,7 @@ filtered = []
 #filtered3 = []
 profarray = []
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_3ms/LOGS-3')):
     for file in files:
         if file.startswith('profile') and file.endswith('.data'): #and os.path.exists(file)==True:
                 #print(root,file)
@@ -89,15 +90,18 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
        #         if j == True:
 
 for i in modelnos: 
-    i = int(i)
+    #i = int(i)
 
     p = dire.profile_data(profile_number=i)                
     profno = p.model_number
             #print('Trues:')
     for number in array_filtered:
+        #print(number)
         #for l in range(1,len(array_filtered)):
         if profno == number:
             print(i)
+            print(profno)
+    profnos += [profno]
 
 
      
