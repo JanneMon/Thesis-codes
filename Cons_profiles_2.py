@@ -16,6 +16,9 @@ Created on Tue Feb 26 16:18:04 2019
 Thius code is meant to put constraints on the standard mesa input files to recognize which profiles 
 lies within a three sigma uncertainty of the observed parameters. This codes assumes that 
 hist interval and profile number is not the same. 
+
+It returns the profiles that are relevant for calculating chi2 for for further constraints. 
+Called in allresults_constrains. 
 """
 
 import mesa_reader as mr
@@ -111,8 +114,10 @@ def useful_profiles(dirname):
             #for l in range(1,len(array_filtered)):
             if profno == number:
                 print(i)
+                
+                #models = 'profile{}-freqs.data'.format(i)
                 profiles.append(i)
-           
+                #print(models)
         #profnos += [profno]
     profiles  
     

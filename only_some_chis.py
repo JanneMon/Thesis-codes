@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Mon Mar  4 14:13:24 2019
+
+@author: janne
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Jan 24 14:42:06 2019
 
 @author: janne
@@ -17,36 +25,23 @@ import re
 plt.close("all")
 
 
-
-
-def chis(fname):
+def chis(fname, profname):
     finalarray = []
     bm_array2 = []
-    
+    models = 'profile{}-freqs.dat'.format(profname)
+ 
     for root, dirs, files in sorted(os.walk(fname)):
         for file in files:
-            if not file.endswith('freqs.dat'): #and os.path.exists(file)==True:
+            if not file.startswith(models): #and os.path.exists(file)==True:
                 continue 
             
-            #print(file)
             names = []
-            #      continue 
             dires = os.path.join(root,file)
-            #data = gar.readmesa(list_number[file])
+            
             data = gar.readmesa(dires)
-            #print(dires, data)
-            #print(dires)
+         
             harm_degree = data['l']
             radial_order= data['n_pg']
-            
-            #print(type(harm_degree))
-            
-            #acou_num = data['n_p']
-            #grav_num = data['n_g']
-            #re_omega = data['Re(omega)']
-            #im_omega = data['Im(omega)']
-            #re_omega_int = data['Re(omega_int)']
-            #m_omega_int = data['Im(omega_int)']
             re_freq_theo = data['Refreq'] # these are the frequencies that will be compared to Lenz and observations. 
             #im_freq = data['Imfreq'] #imaginary part of frequencies are not observable. 
             #print(re_freq_theo)
@@ -88,19 +83,13 @@ def chis(fname):
                 #remaining_obs_unc = np.delete(remaining_obs_unc, bestkk)
                 remaining_radial = np.delete(remaining_radial,bestjj)
         
-                #diff = np.asarray(diff)
-                #final = np.append(bm_array,diff)
-        
             bm_array = np.asarray(best_matching)
                     
             bm_array2 += [bm_array]
             finalarray += [[bm_array, file]]
-            #print(file)
+            
     #print(finalarray)
     #print(bm_array2)
-    #print(len(bm_array2[26])) = 1
-    #farr = [] 
-    
     
     temp = []
     
@@ -140,22 +129,16 @@ def chis(fname):
                 test_result[i][0] = modelnos[i]
                 test_result[i][1] = chi2[i]
                 
-                #, chi2[i]]
-    
-    #test_result += [results]
-    #print(len(modelnos))
     print(modelnos)
     print(chi2)
     
-    plt.figure()
-    plt.plot(modelnos, np.log(chi2), '*', linestyle='None')
-    plt.xlabel('profile/model')
-    plt.ylabel('log(chi2)')
+    
 
     #print(test_result)
     #print(results)
-    return test_result
+    return test_result, finalarray
 #c = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.022-0.29-1.5'
 #a = '/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'
 #b = '/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1'
-#results = chis(b)
+#
+#results = chis(b, '14')
