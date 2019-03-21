@@ -16,19 +16,24 @@ import natsort
 
 Log_Teff_obs = 3.839
 Log_L_obs = 1.340
+Log_g_obs = 3.6
 
 Log_Teff_obs_unc = 0.007
 Log_L_obs_unc = 0.0065 
+Log_g_obs_unc = 0.1
 
-n = 10
-#Three sigma intervals
+n = 3
+
 Log_Teff_ns = n*Log_Teff_obs_unc
 Log_L_ns = n*Log_L_obs_unc
+Log_g_ns = n*Log_g_obs_unc
 
 Log_Teff_lower = Log_Teff_obs - Log_Teff_ns
 Log_Teff_upper = Log_Teff_obs + Log_Teff_ns
 Log_L_lower = Log_L_obs - Log_L_ns
 Log_L_upper = Log_L_obs + Log_L_ns
+Log_g_upper = Log_g_obs + Log_g_ns
+Log_g_lower = Log_g_obs - Log_g_ns
 
 radial_funda = 6.8980
 radial_first = 8.9606
@@ -37,8 +42,8 @@ l = 10
 radial_unc = l* 0.05
 radial_funda_lower = radial_funda - radial_unc
 radial_funda_upper = radial_funda + radial_unc
-radial_first_upper = radial_first - radial_unc
-radial_first_lower = radial_first + radial_unc
+radial_first_upper = radial_first + radial_unc
+radial_first_lower = radial_first - radial_unc
 
 frequencies = []
 frequency_dirs = []
@@ -53,7 +58,7 @@ allresults_history = []
 logg_dires = []
 
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_3ms')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/init_mass_constrain')):
     logdirs = os.path.join(root)
     dires += [logdirs]
     for file in files:    
@@ -118,18 +123,20 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
 profiles = []
 roots_all = []
 alle = []
+alle2 = []
 profnos = []
-
-
+working_logg_dires = []
+logteffs = []
 allprofiles = []
 profiles_all = []
 modelnos = []
+alllogteffs = []
 
 for i in range(0,len(temp)):
     if size(temp[i][0]) == 1:
         continue
     if temp[i][0][0][1] == 1 and radial_funda_lower < temp[i][0][0][4] and temp[i][0][0][4] < radial_funda_upper:
-            #print(i,temp[i][1])
+           #print(i,temp[i][1])
         succesfull_profiles = temp[i][1]
         profile_directories = temp[i][2]
      
@@ -141,11 +148,65 @@ for i in range(0,len(temp)):
         
         root_pnumber = [profile_directories, gnums]
         alle.append(root_pnumber)
-        #profnos.append(gnums)
-        #profiles_all.append(succesfull_profiles)
-        #roots_all.append(profile_directories)
-        #alle = [profnos, roots_all]
+        
+    if temp[i][0][1][1] == 2 and radial_first_lower < temp[i][0][1][4] and temp[i][0][1][4] < radial_first_upper:
+        
+        succesfull_profiles2 = temp[i][1]
+        profile_directories2 = temp[i][2]
+     
+        #profiles.append(succesfull_profiles)
+        gnum2 = re.search('profile(.+?)-freqs.dat', succesfull_profiles2)
+        
+        if gnum2: 
+             gnums2 = gnum2.group(1)
+        
+        root_pnumber2 = [profile_directories2, gnums2]
+        alle2.append(root_pnumber2) 
 
+        alle_final = [alle,alle2]
+i = -1      
+for b in alle_final:
+    
+    i += 1
+    np.concatenate(b)
+    
+    for k, (logdir,profnum) in enumerate(b):
+        #print(k)
+        profiledata = mr.MesaLogDir(logdir)
+        p = profiledata.profile_data(profile_number=profnum)
+        
+        teff = p.Teff
+        #print(teff)
+        logteff = np.log10(teff)
+        lmodel = p.photosphere_L
+        logl = np.log10(lmodel)
+        modelno_profile = p.model_number 
+        #print(modelno_profile)
+        
+        
+        
+        for r in range(0,len(logg_dires)):
+            if logdir == logg_dires[r][2]:
+                for t in range(0,len(logg_dires[r][1])):
+                    #print(modelno_profile)
+                    #print(modelno_profile, logg_dires[r][1][t])
+                    
+                    if not modelno_profile == logg_dires[r][1][t]:#logg_dires[r][1][t]:
+                        continue
+                    #print(modelno_profile, logg_dires[r][1][t])
+                    some_logg_dires = logg_dires[r][0][t]
+                    working_logg_dires.append(some_logg_dires)
+                    
+                    plt.plot(logteff,logg_dires[r][0][t],'k.', MarkerSize = 15)
+                    logteffs.append(logteff)
+        #print(logteff)           
+                    
+    
+    alllogteffs.append(logteffs)
+    #plt.plot([logteffs[0],logteffs[-1]],[working_logg_dires[0], working_logg_dires[-1]],'k--')
+    plt.plot([alllogteffs[i][0],alllogteffs[i][-1]],[working_logg_dires[0], working_logg_dires[-1]],'k--')  
+    #print(i)
+"""
 for k, (logdir, profnum) in enumerate(alle):
     profiledata = mr.MesaLogDir(logdir)
     p = profiledata.profile_data(profile_number=profnum)
@@ -162,19 +223,48 @@ for k, (logdir, profnum) in enumerate(alle):
             for t in range(0,len(logg_dires[r][1])):
                 if not modelno_profile == logg_dires[r][1][t]:
                     continue
-                plot(logteff,logg_dires[r][0][t],'k.')
-    #for r in range(0,len(logg_dires)):
-     #   if logg_dires[r][]
-    
-    #plt.plot(logteff,logl,'k.')
- 
+                #print(modelno_profile, logg_dires[r][1][t])
+                some_logg_dires = logg_dires[r][0][t]
+                working_logg_dires.append(some_logg_dires)
+                plot(logteff,logg_dires[r][0][t],'k.', MarkerSize = 15)
+                logteffs.append(logteff)
+                #plot([logteffs[0],logteffs[-1]],[logg_dires[r][0][0],logg_dires[r][0][-1]],'k-')
+       
+plt.plot([logteffs[0],logteffs[-1]],[working_logg_dires[0], working_logg_dires[-1]],'k-')
+"""
+
 # set axis labels
 xlabel('log Effective Temperature')
-ylabel('log Luminosity')
+ylabel('log g')
 legend()
 plt.gca().invert_xaxis()
 plt.gca().invert_yaxis()
 plt.rcParams.update({'font.size': 20})
+
+
+
+
+
+#PLOT ERRORBOX:
+
+plt.plot([Log_Teff_lower, Log_Teff_upper, Log_Teff_upper, Log_Teff_lower, Log_Teff_lower], [Log_g_lower, Log_g_lower, Log_g_upper, Log_g_upper, Log_g_lower], 'r-.', alpha=0.5, linewidth=3)
+
+
+"""
+     ALL PROFILES:    
+#for k in succesfull_profiles:
+#    print(k)
+    #list_number = [s for s in os.listdir(k) if s.endswith('.data') and not file.startswith('history')]
+k = temp[i][2]    
+profiledata = mr.MesaLogDir(k)
+    
+    for t in profnos:
+        p = profiledata.profile_data(profile_number=t)
+        age = p.star_age
+        
+        ageprofile = [age, k, t]
+        ages.append(ageprofile)
+"""   
 
 """         
 for k in dires:
@@ -219,27 +309,5 @@ for s in range(0,len(modelnos)):
              print(test_result[h][2], test_result[h][1])
              plt.plot(test_result[h][2],test_result[h][1],'k.')
              
-
-
-
-
-PLOT ERRORBOX:
-
-plt.plot([Log_Teff_lower, Log_Teff_upper, Log_Teff_upper, Log_Teff_lower, Log_Teff_lower], [Log_L_lower, Log_L_lower, Log_L_upper, Log_L_upper, Log_L_lower], 'r-.', alpha=0.5, linewidth=3)
-
-
-
-     ALL PROFILES:    
-#for k in succesfull_profiles:
-#    print(k)
-    #list_number = [s for s in os.listdir(k) if s.endswith('.data') and not file.startswith('history')]
-k = temp[i][2]    
-profiledata = mr.MesaLogDir(k)
-    
-    for t in profnos:
-        p = profiledata.profile_data(profile_number=t)
-        age = p.star_age
-        
-        ageprofile = [age, k, t]
-        ages.append(ageprofile)
-"""        
+     
+"""
