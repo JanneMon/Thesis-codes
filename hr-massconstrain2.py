@@ -56,14 +56,17 @@ logg_model = []
 test_result = []
 allresults_history = []
 logg_dires = []
+diffsndirs = []
+minimum = []
 
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_3ms')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_10_masses/LOGS-1.50-0.02-0.7-0.4')):
     logdirs = os.path.join(root)
     dires += [logdirs]
     for file in files:    
         if file.startswith('history'):
-            #print(os.path.join(root,file))
+              
+                #print(os.path.join(root,file))
             direcs = os.path.join(root,file)
             rooties = os.path.join(root)
             #print(natsort.natsorted(dirs,reverse=True))
@@ -77,15 +80,10 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
             
             logg_dir = [noms_logg, noms_model, rooties]
             logg_dires.append(logg_dir)
-            
-            
-            
            
             noms_Teff = h.log_Teff[index]
             noms_L = h.log_L[index]
-            
-            
-             
+    
             test_result = np.zeros((len(noms_model),3))
             #rint(test_result)
             for i in range(0,len(noms_model)):
@@ -93,32 +91,102 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
                 test_result[i][1] = noms_logg[i]
                 test_result[i][2] = noms_Teff[i]
            
-          
-            """if file.endswith('profile1.data'):
+            plt.plot(noms_Teff, noms_logg, '-',label='M=%s' %mass)
+        
+        if file.startswith('profile') and file.endswith('.data'):
             
-                pdirs = os.path.join(root)
-                #print(pdirs)
-                l = mr.MesaLogDir(pdirs)
-                p = l.profile_data()
-                Z = p.initial_z
-            """
-            plot(noms_Teff, noms_logg, '-',label='M=%s' %mass)
+            profiledirs = os.path.join(root,file)
+            
+            pnum = re.search('profile(.+?).data', profiledirs)
         
-        #allresults_history.append(test_result)
-        
+            if pnum: 
+                pnums = pnum.group(1)  
+            
+            profiles_indir = mr.MesaLogDir('/home/janne/Gunter_project/44_tau/example_10_masses/LOGS-1.50-0.02-0.7-0.4')
+            pr = profiles_indir.profile_data(profile_number=pnums)
+            pr_modelnos = pr.model_number
+            
+            if pr_modelnos == noms_model[0]:
+                cutoff = pnums
+    #allresults_history.append(test_result)
+    
         if file.endswith('freqs.dat'):
-                
             gyredirs = os.path.join(root,file)
             gyreroots = os.path.join(root)
-            #print(gyredirs)
-            freqs = gyr.readmesa(gyredirs)
-            
-            frequencies += [freqs]
-            frequency_dirs += [gyredirs]
-            frequency_roots += [gyreroots]
-            allfreqs = [freqs ,gyredirs,gyreroots]
-            temp.append(allfreqs)
+            fnum = re.search('profile(.+?)-freqs.dat', gyredirs)
+        
+            if fnum: 
+                fnums = fnum.group(1)  
+            if int(cutoff) <= int(fnums):
+                #print(fnums)
+                
+                #print(gyredirs)
+                
+                freqs = gyr.readmesa(gyredirs)
+                
+                frequencies += [freqs]
+                frequency_dirs += [gyredirs]
+                frequency_roots += [gyreroots]
+                allfreqs = [freqs ,gyredirs,gyreroots]
+                temp.append(allfreqs)
 
+profiles = []
+differs = []
+temp3 = []
+minValue = None
+
+
+for i in range(0,len(temp)):
+    if size(temp[i][0]) ==1:
+        continue
+    if temp[i][0][0][1] == 1 and temp[i][0][1][1] == 2:
+        #print('hej')
+        
+        succesfull_profiles = temp[i][1]
+        profile_directories = temp[i][2]
+        difference = np.abs(temp[i][0][0][4]-radial_funda)
+        #print(difference)
+        
+        #difference_next = np.abs(temp[i+1][0][0][4]-radial_funda)
+       
+        currentValue = difference
+        
+        if minValue == None:
+            minValue = currentValue
+        else:
+            minValue = min(minValue, currentValue)
+            
+    
+        temp2 = [succesfull_profiles, difference]
+        diffsndirs.append(temp2)
+        
+        profiles.append(profile_directories)
+        differs.append(difference)
+
+minimum = differs.index(minValue)
+minimum_profile = diffsndirs[minimum]
+
+gnum = re.search('profile(.+?)-freqs.dat', minimum_profile[0])
+        
+if gnum: 
+    gnums = gnum.group(1)        
+    
+profiledata = mr.MesaLogDir('/home/janne/Gunter_project/44_tau/example_10_masses/LOGS-1.50-0.02-0.7-0.4')
+p = profiledata.profile_data(profile_number=gnums)
+
+teff = p.Teff
+#print(teff)
+logteff = np.log10(teff)
+lmodel = p.photosphere_L
+logl = np.log10(lmodel)
+modelno_profile = p.model_number 
+
+entry = np.where(logg_dires[0][1]== modelno_profile)
+best_logg = logg_dires[0][0][entry]
+
+plt.plot(logteff,best_logg,'k.', MarkerSize = 15)
+
+"""
 
 profiles = []
 roots_all = []
@@ -140,7 +208,7 @@ minimum = []
 diff = []
 smallest = 0
 
-"""
+
 for i in range(0,len(temp)):
     if size(temp[i][0]) ==1:
         continue
@@ -155,7 +223,7 @@ for i in range(0,len(temp)):
         temp2 = [succesfull_profiles, diff]
         diffsndirs.append(temp2)
         
-"""
+
 
 
 for i in range(0,len(temp)):
@@ -242,8 +310,9 @@ for b in alle_final:
     
     alllogteffs.append(logteffs)
     #plt.plot([logteffs[0],logteffs[-1]],[working_logg_dires[0], working_logg_dires[-1]],'k--')
-    plt.plot([alllogteffs[i][0],alllogteffs[i][-1]],[working_logg_dires[0], working_logg_dires[-1]],'k--')  
-    #print(i)
+    plt.plot([alllogteffs[i][0],alllogteffs[i][-1]],[working_logg_dires[0], working_logg_dires[-1]],'k--') 
+    
+"""
 
 # set axis labels
 xlabel(r'$\logT_{eff}$')
@@ -256,24 +325,7 @@ plt.rcParams.update({'font.size': 20})
 
 
 
-
 #PLOT ERRORBOX:
 
 plt.plot([Log_Teff_lower, Log_Teff_upper, Log_Teff_upper, Log_Teff_lower, Log_Teff_lower], [Log_g_lower, Log_g_lower, Log_g_upper, Log_g_upper, Log_g_lower], 'r-.', alpha=0.5, linewidth=3)
 
-"""
-     #ALL PROFILES:    
-#for k in succesfull_profiles:
-#    print(k)
-    #list_number = [s for s in os.listdir(k) if s.endswith('.data') and not file.startswith('history')]
-k = temp[i][2]    
-profiledata = mr.MesaLogDir(k)
-    
-    for t in profnos:
-        p = profiledata.profile_data(profile_number=t)
-        age = p.star_age
-        
-        ageprofile = [age, k, t]
-        ages.append(ageprofile)
-  
-"""

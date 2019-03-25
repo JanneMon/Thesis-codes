@@ -30,11 +30,13 @@ Log_L_lower = Log_L_obs - Log_L_ns
 Log_L_upper = Log_L_obs + Log_L_ns
 
 
+s=0.15
 
-
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/init_mass_constrain/output_init_mass_constrain')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_test_mlt02')):
     for file in files:
+        
         if file.startswith('history'):
+            s+= 0.05
             #print(os.path.join(root,file))
             dirs = os.path.join(root,file)
             #print(natsort.natsorted(dirs,reverse=True))
@@ -47,6 +49,7 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/init_
             #plot(h.log_Teff, h.log_L)
             #plot(noms_Teff, noms_L, label='%s$M_{\odot}$' %mass)
             #plt.gca().invert_xaxis()
+            
             if file.endswith('profile1.data'):
             
                 pdirs = os.path.join(root)
@@ -54,11 +57,14 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/init_
                 l = mr.MesaLogDir(pdirs)
                 p = l.profile_data()
                 Z = p.initial_z
+                
+            plt.plot(Log_Teff_obs, Log_L_obs,'r*', MarkerSize=10)
             
-            plot(noms_Teff, noms_L, '.')#label='Z=%s' %Z)
+            plt.plot(noms_Teff, noms_L, '-', MarkerSize=10, label='Overshoot=%s' %s)
+            
 # set axis labels
-xlabel('log Effective Temperature')
-ylabel('log Luminosity')
+xlabel(r'$\logT_{eff}$')
+ylabel(r'$\log(g)$')
 legend()
 plt.gca().invert_xaxis()
 plt.rcParams.update({'font.size': 20})
