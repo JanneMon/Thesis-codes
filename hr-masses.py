@@ -32,7 +32,7 @@ Log_L_upper = Log_L_obs + Log_L_ns
 
 s=0.15
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_test_mlt02')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_3ms')):
     for file in files:
         
         if file.startswith('history'):

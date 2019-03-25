@@ -35,22 +35,29 @@ allfreqs = []
 
 def petersen_plot(fname):
     #directory = '/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1'
-    list_number = [os.path.join(fname, file) for file in os.listdir(fname) if file.endswith('-freqs.dat')]
+    list_number = [os.path.join(fname, file) 
+                   for file in os.listdir(fname) 
+                   if file.endswith('-freqs.dat')]
     #plt.figure(fname)
+    #f0 = [gyr.readmesa(file)[0][4] for file in list_number]
+    #f1 = [gyr.readmesa(file)[1][4] for file in list_number]
+    
+    
+    periods = []
+    ratios = []
     for file in list_number:
         #print(file)
         freqs = gyr.readmesa(file)
         if size(freqs) == 1:
             continue
-        for i in range(0,len(freqs)):
-                    #for j in range(0,len(freqs[i]):
-                    if not freqs[0][1] == 1 and freqs[1][1] == 2:
-                        continue
-                    ratio = freqs[0][4]/freqs[1][4]
-                    
-                    plt.plot(np.log(freqs[0][4]),ratio,'r.')
-    
-    return freqs            
+        if not freqs[0][1] == 1 and freqs[1][1] == 2:
+            continue
+        ratios += [freqs[0][4]/freqs[1][4]]
+        periods += [np.log(freqs[0][4])]
+        # append into lists before plotting
+    plt.plot(periods, ratios, 'r.')
+
+    return             
         
 
 results_final = []
