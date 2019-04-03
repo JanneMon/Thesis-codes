@@ -17,7 +17,7 @@ import re
 plt.close("all")
 
 
-
+#test_results = []
 
 def chis(fname):
     finalarray = []
@@ -51,8 +51,8 @@ def chis(fname):
             #im_freq = data['Imfreq'] #imaginary part of frequencies are not observable. 
             #print(re_freq_theo)
     
-            re_freq_obs = [6.8980, 8.9607, 11.20, 13.48]
-            re_freq_obs_unc     = [2.762223525*10**(-7), 8.454940424*10**(-7),  1*10**(-7), 1*10**(-7)]
+            re_freq_obs = [6.8980, 8.9607]
+            re_freq_obs_unc     = [2.762223525*10**(-7), 8.454940424*10**(-7)]
             #print(len(np.atleast_1d(re_freq_theo)))
             #re_freq_obs_unc = np.ones(len(re_freq_obs)) * 0.1
             remaining_obs = re_freq_obs 
@@ -114,6 +114,7 @@ def chis(fname):
     
     finalarray = temp
     
+    
     chi2 = np.zeros(len(finalarray))
     modelnos = np.zeros(len(finalarray))
     #print(len(finalarray))
@@ -142,10 +143,10 @@ def chis(fname):
                 
                 #, chi2[i]]
     
-    #test_result += [results]
+    #test_results += [test_result]
     #print(len(modelnos))
-    print(modelnos)
-    print(chi2)
+    #print(modelnos)
+    #print(chi2)
     
     plt.figure()
     plt.plot(modelnos, np.log(chi2), '*', linestyle='None')
@@ -154,7 +155,9 @@ def chis(fname):
 
     #print(test_result)
     #print(results)
-    return test_result
+    return test_results
+
+test_results = chis('/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2')
 #c = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.022-0.29-1.5'
 #a = '/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'
 #b = '/home/janne/Gunter_project/44_tau/example_3ms/LOGS-1'

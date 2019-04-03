@@ -29,14 +29,16 @@ Log_Teff_upper = Log_Teff_obs + Log_Teff_ns
 Log_L_lower = Log_L_obs - Log_L_ns
 Log_L_upper = Log_L_obs + Log_L_ns
 
+# output_test_mlt02 is a good example for overshoot
 
-s=0.15
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_3ms')):
+s=0.25
+
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_3_masses_ov025')):
     for file in files:
         
         if file.startswith('history'):
-            s+= 0.05
+            #s+= 0.05
             #print(os.path.join(root,file))
             dirs = os.path.join(root,file)
             #print(natsort.natsorted(dirs,reverse=True))
@@ -57,17 +59,18 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/outpu
                 l = mr.MesaLogDir(pdirs)
                 p = l.profile_data()
                 Z = p.initial_z
+                #M = p.initial_mass
                 
             plt.plot(Log_Teff_obs, Log_L_obs,'r*', MarkerSize=10)
-            
-            plt.plot(noms_Teff, noms_L, '-', MarkerSize=10, label='Overshoot=%s' %s)
+            plt.rcParams.update({'font.size': 20})
+            plt.plot(noms_Teff, noms_L, '-', MarkerSize=10, label='Mass=%s' %mass)
             
 # set axis labels
 xlabel(r'$\logT_{eff}$')
-ylabel(r'$\log(g)$')
+ylabel(r'$\logL$')
 legend()
 plt.gca().invert_xaxis()
-plt.rcParams.update({'font.size': 20})
+
 
 """
 PLOT ERRORBOX:

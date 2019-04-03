@@ -11,6 +11,7 @@ import os
 import mesa_reader as mr
 import matplotlib.pyplot as plt
 import gyre_output_read as gyr
+import math
 plt.close("all")
 
 
@@ -36,8 +37,7 @@ Log_g_upper = Log_g_obs + Log_g_ns
 Log_g_lower = Log_g_obs - Log_g_ns
 
 radial_funda = 6.8980
-
-#radial_first = 8.9606
+radial_first = 8.9606
 
 
 loggs = []
@@ -70,30 +70,35 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
                #logteff = np.log(teff)
                r = pr.photosphere_r
                m = pr.initial_mass
-               g = m/r**2
-               #logg = np.log(g) 
+               m_solar = 1.9892 * 10 ** (33)
+               r_solar = 6.9598 * 10 ** (10)
+               R = r*r_solar
+               M = m*m_solar
+               G = 6.67428 * 10 ** (-8)
+               
+               g = G*M/R**2
+               logg = np.log10(g)
+               logteff = np.log10(teff)
                
                profile_numbers.append(pnums)
-               loggs.append(g)
-               logteffs.append(teff)
+               loggs.append(logg)
+               logteffs.append(logteff)
                alle = [g, teff, pnums]
                alle_final.append(alle)
               
 # %%
 
-plt.plot(np.log10(logteffs),np.log10(loggs),'r-')
-xlabel(r'$\logT_{eff}$')
-ylabel(r'$\log(g)$')
-legend()
-plt.gca().invert_xaxis()
-plt.gca().invert_yaxis()
-plt.rcParams.update({'font.size': 20})
-#plt.plot([Log_Teff_lower, Log_Teff_upper, Log_Teff_upper, Log_Teff_lower, Log_Teff_lower], [Log_g_lower, Log_g_lower, Log_g_upper, Log_g_upper, Log_g_lower], 'r-.', alpha=0.5, linewidth=3)
+plt.plot(logteffs,loggs,'r-')
+
+plt.plot([Log_Teff_lower, Log_Teff_upper, Log_Teff_upper, Log_Teff_lower, Log_Teff_lower], [Log_g_lower, Log_g_lower, Log_g_upper, Log_g_upper, Log_g_lower], 'r-.', alpha=0.5, linewidth=3)
 
 alle = []
-differences = []
-minValue = None
-diffsndirs = []
+differences_radial = []
+differences_first = []
+minValueRadial = None
+minValueFirst = None
+diffsndirs_radial = []
+diffsndirs_first = []
     
 for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_10_masses/LOGS-1.50-0.02-0.7-0.4')):
     files.sort(key=lambda x: '{0:0>20}'.format(x))
@@ -116,24 +121,47 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/examp
                         difference_first = np.abs(freqs[1][4] - radial_first)    
                         #differences.append()
                         
-                        currentValue = difference_funda
+                        currentValueRadial = difference_funda
                 
-                        if minValue == None:
-                            minValue = currentValue
+                        if minValueRadial == None:
+                            minValueRadial = currentValueRadial
                         else:
-                            minValue = min(minValue, currentValue)
+                            minValueRadial = min(minValueRadial, currentValueRadial)
+                            
+                        currentValueFirst = difference_first
+                
+                        if minValueFirst == None:
+                            minValueFirst = currentValueFirst
+                        else:
+                            minValueFirst = min(minValueFirst, currentValueFirst)
                                 
-                        differences.append(difference_funda)
-                        temp2 = [gyredirs, difference_funda]
-                        diffsndirs.append(temp2)
+                        differences_radial.append(difference_funda)
+                        differences_first.append(difference_first)
+                        temp_radial = [gyredirs, difference_funda]
+                        temp_first = [gyredirs, difference_first]
+                        diffsndirs_radial.append(temp_radial)
+                        diffsndirs_first.append(temp_first)
 
-minimum = differences.index(minValue)
-minimum_profile = diffsndirs[minimum] 
+minimum_radial = differences_radial.index(minValueRadial)
+minimum_profile_radial = diffsndirs_radial[minimum_radial]
+minimum_first = differences_first.index(minValueFirst)
+minimum_profile_first = diffsndirs_first[minimum_first] 
+ 
 
-best_g = alle_final[minimum][0]
-best_teff = alle_final[minimum][1]
+best_g_radial = alle_final[minimum_radial][0]
+best_teff_radial = alle_final[minimum_radial][1]
+best_g_first = alle_final[minimum_first][0]
+best_teff_first = alle_final[minimum_first][1]
 
-plt.plot(np.log10(best_teff),np.log10(best_g),'k.', MarkerSize = 15)                       
+plt.plot(np.log10(best_teff_radial),np.log10(best_g_radial),'k.', MarkerSize = 15)   
+plt.plot(np.log10(best_teff_first),np.log10(best_g_first),'r.', MarkerSize = 5)  
+
+xlabel(r'$\logT_{eff}$')
+ylabel(r'$\log(g)$')
+legend()
+plt.gca().invert_xaxis()
+plt.gca().invert_yaxis()
+plt.rcParams.update({'font.size': 20})                    
 #%% 
                 
            

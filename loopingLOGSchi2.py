@@ -7,8 +7,9 @@ Created on Wed Feb 20 19:08:40 2019
 """
 
 import chi2_allLOGS as chall
-import Const_profiles_allLOGS as constp
+#import Const_profiles_allLOGS as constp
 import os
+import numpy as np
 
 a = '/home/janne/Gunter_project/gunther_project/LOGS_44_tau_testrun/'
 b = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.020-0.29-1.5'
@@ -18,7 +19,7 @@ b = '/home/janne/Gunter_project/44_tau/example_zs/LOGS-2.0-0.020-0.29-1.5'
 
 results_final = []
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/example_zs/')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_postms_3ms/')):
         for dire in dirs:
             dires = os.path.join(root,dire)
             #print(dires)
