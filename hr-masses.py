@@ -19,7 +19,7 @@ Log_L_obs = 1.340
 Log_Teff_obs_unc = 0.007
 Log_L_obs_unc = 0.0065 
 
-n = 10
+n = 3
 #Three sigma intervals
 Log_Teff_ns = n*Log_Teff_obs_unc
 Log_L_ns = n*Log_L_obs_unc
@@ -34,7 +34,7 @@ Log_L_upper = Log_L_obs + Log_L_ns
 
 s=0.25
 
-for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/output_3_masses_ov025')):
+for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/mesh')):
     for file in files:
         
         if file.startswith('history'):
@@ -63,7 +63,7 @@ for root, dirs, files in sorted(os.walk('/home/janne/Gunter_project/44_tau/outpu
                 
             plt.plot(Log_Teff_obs, Log_L_obs,'r*', MarkerSize=10)
             plt.rcParams.update({'font.size': 20})
-            plt.plot(noms_Teff, noms_L, '-', MarkerSize=10, label='Mass=%s' %mass)
+            plt.plot(noms_Teff, noms_L, '.', MarkerSize=5, label='Mass=%s' %mass)
             
 # set axis labels
 xlabel(r'$\logT_{eff}$')

@@ -29,6 +29,7 @@ everything = []
 def allfreqs(fname):
     alldata = []
     alle = []
+    print(fname)
     for root, dirs, files in sorted(os.walk(fname)):
         for file in files:
             if not file.endswith('freqs.dat'): #and os.path.exists(file)==True:
