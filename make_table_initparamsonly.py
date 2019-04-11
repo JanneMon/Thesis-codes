@@ -16,7 +16,7 @@ import mesa_reader as mr
 import re
 from pylab import *
 
-def getfundfreqs(fname):
+def getmodelparams(fname):
     constraint_noprems = 400
     fnumbers = []
     alle = []
@@ -38,22 +38,19 @@ def getfundfreqs(fname):
                 y    = float(dire[3])
                 mlt  = float(dire[4])
                 #ove  = [float(dire[5])]
-                
-                if fdata[0][1] == 1 and fdata[1][1] == 2:
-                        fnum = re.search('profile(.+?)-freqs.dat', fdires)
-                        
-                        if fnum: 
-                           fnums = fnum.group(1)
-                        if int(fnums) >= int(constraint_noprems): 
-                            
-                            
-                            fnumbers += [fnums]
-                            
-                            #STRUCTURE: radial fundamental, radial first, mass, z, y, mixing-length, profile number
-                            alle += [[fdata[0][4], fdata[1][4], mass, z, y, mlt, fnums]]
-    np.asarray(alle)
-    np.savetxt("test1.txt", alle, delimiter=",", newline = "\n", fmt="%s")
-    #np.savetxt('test1.txt', alle, fmt='%10d' )
-    return 
 
-#getfundfreqs('/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2/')
+                fnum = re.search('profile(.+?)-freqs.dat', fdires)
+                        
+                if fnum: 
+                    fnums = fnum.group(1)
+                    if int(fnums) >= int(constraint_noprems): 
+                                   
+                        fnumbers += [fnums]
+                        alle += [[mass, z, y, mlt, fnums]]
+                    
+    np.asarray(alle)
+    np.savetxt('temp1_l012.txt', alle, delimiter=",", newline = "\n", fmt="%s")
+    #np.savetxt('test1.txt', alle, fmt='%10d' )
+    return
+
+getmodelparams('/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2')

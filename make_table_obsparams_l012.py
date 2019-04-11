@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr  5 17:29:08 2019
+Created on Wed Apr 10 18:58:39 2019
 
 @author: janne
-
-calculate chi2 for one directory
 """
-
-import gyre_output_read as gar
-import numpy as np
-import matplotlib.pyplot as plt
-import os, sys
 import mesa_reader as mr
-import re
-from pylab import *
+import numpy as np
 
-filename = 'test1.txt'
-#fname = '/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2/'
-
-def getinitparams(fname):
+def getobsparams(fname):
+    filename = 'temp1_l012.txt'
     list_of_lists = []
     pdata = []
     
@@ -29,7 +19,7 @@ def getinitparams(fname):
             list_of_lists.append(inner_list)
             
     for i in range(0,len(list_of_lists)):
-        profnum = list_of_lists[i][6]
+        profnum = list_of_lists[i][4]
         profiles_indir = mr.MesaLogDir(fname)
         
         pr = profiles_indir.profile_data(profile_number=profnum)
@@ -48,14 +38,14 @@ def getinitparams(fname):
         pdata += [[np.log10(teff), np.log10(g), np.log10(l)]]
         
     np.asarray(pdata)
-    np.savetxt("test2.txt", pdata, delimiter=",", newline = "\n", fmt="%s")
+    np.savetxt("temp2_l012.txt", pdata, delimiter=",", newline = "\n", fmt="%s")
     
     
-    filename1 = 'test1.txt'
-    filename2 = 'test2.txt'
+    filename1 = 'temp1_l012.txt'
+    filename2 = 'temp2_l012.txt'
     files = [[filename1, filename2]]
     
-    with open('results.txt', 'w') as outfile:
+    with open('results_l012.txt', 'w') as outfile:
         for file in files:
             with open(file[0]) as newfile,open(file[1]) as newfile1:
                 lines=zip(newfile,newfile1)
@@ -63,5 +53,4 @@ def getinitparams(fname):
                     outfile.write(line[0].rstrip() + "," + line[1])
     
     return
-
-#getinitparams('/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2/')
+#getobsparams('/home/janne/Gunter_project/44_tau/output_postms_3ms/LOGS-1.5-0.02-0.7-0.2')
